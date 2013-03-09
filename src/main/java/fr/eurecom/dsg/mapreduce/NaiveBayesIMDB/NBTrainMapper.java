@@ -59,7 +59,7 @@ public abstract class NBTrainMapper
 			throws IOException, InterruptedException {
 		context.write(NBTrainJob.CLASS_KEY, this.getClassWithOne());
 		String sline = line.toString().trim().toLowerCase();
-		for (String word : sline.replaceAll("[^a-zA-Z0-9'\\s]", "").split("\\s+")) { // TODO: split in a smart way
+		for (String word : sline.replaceAll("[^a-zA-Z0-9'\\s]", " ").split("\\s+")) { // TODO: split in a smart way
 			if (this.getExcludedWords().contains(word)) {
 				continue;
 			}

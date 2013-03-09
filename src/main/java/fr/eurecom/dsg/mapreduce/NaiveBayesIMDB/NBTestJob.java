@@ -23,7 +23,7 @@ public class NBTestJob extends Job {
 							, Path negativePath
 							, Path trainOutputPath
 							, Path outputPath) throws IOException, URISyntaxException {
-		super(conf);
+		super(conf,"Naive Bayes Test");
 		
 		this.setJarByClass(NBTestJob.class);
 		
@@ -48,12 +48,13 @@ public class NBTestJob extends Job {
 															, TextInputFormat.class
 															, NBTestNegativeMapper.class);
 		
-    FileSystem fs = FileSystem.get(conf);
+    FileSystem fs = FileSystem.get(this.getConfiguration());
     
 		for (FileStatus status : fs.listStatus(trainOutputPath)) {
 		  if (status.getPath().getName().startsWith("part-")) {
 		    System.out.println("Caching file " + status.getPath().toUri());
-			  DistributedCache.addCacheFile(status.getPath().toUri(),conf);
+			  DistributedCache.addCacheFile(status.getPath().toUri()
+			                              , this.getConfiguration());
 		  }
 		}
 		

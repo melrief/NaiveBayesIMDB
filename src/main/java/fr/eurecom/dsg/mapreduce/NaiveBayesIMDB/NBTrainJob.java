@@ -1,9 +1,11 @@
 package fr.eurecom.dsg.mapreduce.NaiveBayesIMDB;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -35,7 +37,7 @@ public class NBTrainJob extends Job {
 							 , Path negativePath
 							 , URI excludedWordsURI
 							 , Path outputPath) throws IOException {
-		super(conf);
+		super(conf, "Naive Bayes Train");
 		
 		this.setJarByClass(NBTrainJob.class);
 		
@@ -62,8 +64,13 @@ public class NBTrainJob extends Job {
 		TextOutputFormat.setOutputPath(this, outputPath);
 
 		if (excludedWordsURI != null) {
-			System.out.println("Caching file " + excludedWordsURI);
-			DistributedCache.addCacheFile(excludedWordsURI, conf);
+		  FileSystem fs = FileSystem.get(this.getConfiguration());
+		  if (!fs.exists(new Path(excludedWordsURI.getPath()))) {
+		    throw new FileNotFoundException(excludedWordsURI.getPath());
+		  }
+		  fs.close();
+			System.out.println("Caching file " + excludedWordsURI.toString());
+			DistributedCache.addCacheFile(excludedWordsURI, this.getConfiguration());
 		}
 	}
 

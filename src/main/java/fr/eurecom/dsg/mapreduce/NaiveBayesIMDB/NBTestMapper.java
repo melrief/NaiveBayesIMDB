@@ -75,9 +75,15 @@ public abstract class NBTestMapper extends Mapper<LongWritable, Text
 					
  					if (classStr.equals(NBTrainJob.NEG.toString())) {
  						negWordsCounter.put(word,counter);
+ 						if (!posWordsCounter.containsKey(word)) {
+ 						  posWordsCounter.put(word,0l);
+ 						}
  					}
  					else if (classStr.equals(NBTrainJob.POS.toString())) {
  						posWordsCounter.put(word,counter);
+ 						if (!negWordsCounter.containsKey(word)) {
+              negWordsCounter.put(word,0l);
+            }
  					}
  					
  					if (wordsTotCounter.containsKey(word)) {

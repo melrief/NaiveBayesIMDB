@@ -37,6 +37,7 @@ public class NBMain extends Configured implements Tool {
     Configuration conf = this.getConf();
     FileSystem fs = FileSystem.get(conf);
     this.parseArgs(args, fs);
+    fs.close();
     
     System.out.println("Starting the training phase");
     
@@ -55,13 +56,13 @@ public class NBMain extends Configured implements Tool {
     
     System.out.println("Train phase completed. Starting the testing phase");
     
+    fs = FileSystem.get(conf);
     for (FileStatus status : fs.listStatus(trainOutputPath)) {
       if (status.getPath().getName().startsWith("part-")) {
         System.out.println("Caching file " + status.getPath().toUri());
         DistributedCache.addCacheFile(status.getPath().toUri(),conf);
       }
     }
-    
     fs.close();
     
     NBTestJob testJob = new NBTestJob(conf
@@ -99,6 +100,7 @@ public class NBMain extends Configured implements Tool {
     
     if (cmd.hasOption("e")) {
       this.excludedWordsURI = new URI(cmd.getOptionValue("e"));
+      System.out.println("Excluded words URI: " + this.excludedWordsURI.toString());
     } else {
       this.excludedWordsURI = null;
     }
